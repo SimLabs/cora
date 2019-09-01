@@ -50,6 +50,21 @@ template<class processor>                       \
 #define REFL_ENTRY(entry)                       \
     REFL_ENTRY_NAMED(#entry, entry)
 
+#define REFL_ENTRY2(entry1, entry2)             \
+    REFL_ENTRY(entry1) \
+    REFL_ENTRY(entry2) 
+
+#define REFL_ENTRY3(entry1, entry2, entry3)             \
+    REFL_ENTRY(entry1) \
+    REFL_ENTRY(entry2) \
+    REFL_ENTRY(entry3) 
+
+#define REFL_ENTRY4(entry1, entry2, entry3, entry4)             \
+    REFL_ENTRY(entry1) \
+    REFL_ENTRY(entry2) \
+    REFL_ENTRY(entry3) \
+    REFL_ENTRY(entry4) 
+
 #define REFL_CHAIN(base)                        \
     static_assert(std::is_base_of_v<base, type>, "REFL_CHAIN for non-base type"); \
     static_assert(!std::is_same_v<base, type>, "REFL_CHAIN for same type"); \

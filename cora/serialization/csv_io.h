@@ -4,6 +4,9 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <sstream>
+
+#include "cora/reflection/reflection.h"
 
 namespace cora
 {
@@ -83,6 +86,18 @@ namespace csv_io
         csv_line_proc proc(s);
         reflect(proc, data);
         s << std::endl;
+    }
+
+    template<typename Container>
+    void write_csv_file(std::ostream &s, Container const &data)
+    {
+        using value_type = Container::value_type;
+
+        value_type dummy;
+        write_csv_title(s, dummy);
+
+        for (auto const &e : data)
+            write_csv_line(s, e);  
     }
 
 } // namespace csv_io
