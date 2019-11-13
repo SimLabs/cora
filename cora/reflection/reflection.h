@@ -70,6 +70,26 @@ template<class processor>                       \
     static_assert(!std::is_same_v<base, type>, "REFL_CHAIN for same type"); \
     reflect2(std::forward<processor>(proc), static_cast<base&>(lobj), static_cast<base&>(robj));
 
-#define REFL_END()                              \
-}
+#define REFL_END() }
+
+
+#define ENUM_DECL(name) \
+    inline auto const &enum_string_match_detail(name const*)       \
+    {                                                              \
+        typedef name enum_type;                                    \
+        const static std::vector<std::pair<enum_type, std::string>> m = {
+
+#define ENUM_DECL_INNER(name) friend ENUM_DECL(name)
+
+#define ENUM_DECL_ENTRY(e) \
+    { e, #e },
+
+#define ENUM_DECL_ENTRY_S(e) \
+    { enum_type::e, #e },
+
+#define ENUM_DECL_END()     \
+        };                  \
+        return m;           \
+    }
+
 
