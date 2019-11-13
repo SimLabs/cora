@@ -42,10 +42,10 @@ template<class processor>                       \
     friend REFL_STRUCT_BODY(type)
 
 #define REFL_ENTRY_NAMED(name, entry)           \
-    if constexpr (std::is_base_of_v<cora::reflection::processor2, processor>) \
-        proc(name, lobj.entry, robj.entry); \
+    if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<processor>>) \
+        proc(lobj.entry, robj.entry, name); \
     else \
-        proc(name, lobj.entry);
+        proc(lobj.entry, name);
 
 #define REFL_ENTRY(entry)                       \
     REFL_ENTRY_NAMED(#entry, entry)

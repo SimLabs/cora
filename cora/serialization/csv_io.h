@@ -34,7 +34,7 @@ namespace csv_io
         }
 
         template<typename T>
-        void operator()(std::string_view name, T const &entry)
+        void operator()(T const &entry, std::string_view name)
         {
             if (!first_)
                 s_ << ",";
