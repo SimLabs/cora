@@ -4,10 +4,35 @@ namespace cora
 {
 namespace reflection
 {
+    struct processor_base
+    {
+    };
+
+    template<typename Tag>
+    struct tag_applier
+    {
+        template<typename Processor>
+        tag_applier(Processor &&proc)
+        {
+            proc.enable_tag()
+        }
+    };
+
     struct processor2
+        : processor_base
     {
         
     };
+
+    template<typename Proc, typename T, typename... Args>
+    void apply_proc(Proc &&proc, T &&l, T &&r, Args&&... args)
+    {
+        if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<Proc>>) \
+            proc(std::forward<T>(l), std::forward<T>(r), std::forward<Args>(args)...); \
+        else \
+            proc(std::forward<T>(l), std::forward<Args>(args)...); \
+    }
+
 
 } // namespace reflection
 } // namespace cora
@@ -41,14 +66,30 @@ template<class processor>                               \
 template<class processor>                       \
     friend REFL_STRUCT_BODY(type)
 
-#define REFL_ENTRY_NAMED(name, entry)           \
+/*
+#define REFL_ENTRY_NAMED(entry, name)           \
     if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<processor>>) \
         proc(lobj.entry, robj.entry, name); \
     else \
         proc(lobj.entry, name);
 
+#define REFL_ENTRY_NAMED_WITH_TAG(entry, name, tag) \
+    if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<processor>>) \
+        proc(lobj.entry, robj.entry, name, tag); \
+    else \
+        proc(lobj.entry, name, tag);
+*/
+
+#define REFL_ENTRY_NAMED(entry, name) cora::reflection::apply_proc(proc, lobj.entry, robj.entry, name);        
+#define REFL_ENTRY_NAMED_WITH_TAG(entry, name, tag) cora::reflection::apply_proc(proc, lobj.entry, robj.entry, name, tag);        
+
+
 #define REFL_ENTRY(entry)                       \
-    REFL_ENTRY_NAMED(#entry, entry)
+    REFL_ENTRY_NAMED(entry, #entry)
+
+#define REFL_ENTRY_TAG(entry, tag)              \
+    REFL_ENTRY_NAMED_WITH_TAG(entry, #entry, tag)
+
 
 #define REFL_ENTRY2(entry1, entry2)             \
     REFL_ENTRY(entry1) \
@@ -69,6 +110,8 @@ template<class processor>                       \
     static_assert(std::is_base_of_v<base, type>, "REFL_CHAIN for non-base type"); \
     static_assert(!std::is_same_v<base, type>, "REFL_CHAIN for same type"); \
     reflect2(std::forward<processor>(proc), static_cast<base&>(lobj), static_cast<base&>(robj));
+
+
 
 #define REFL_END() }
 
