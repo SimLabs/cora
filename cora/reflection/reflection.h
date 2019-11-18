@@ -43,6 +43,10 @@ void reflect(processor && proc, T && object)
     reflect2(std::forward<processor>(proc), std::forward<T>(object), std::forward<T>(object));
 }
 
+// to avoid implicit casts
+template<typename processor, typename T>
+void reflect2(processor && proc, T const &, T const &) = delete;
+
 #define REFL_STRUCT_BODY(...)                           \
 void reflect2(processor && proc, __VA_ARGS__  const & lhs, __VA_ARGS__  const & rhs) \
 {                                                       \
