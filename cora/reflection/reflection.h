@@ -24,15 +24,15 @@ namespace reflection
         
     };
 
-    template<typename Proc, typename T, typename... Args>
-    void apply_proc(Proc &&proc, T &&l, T &&r, Args&&... args)
+    // Tags const... tags: const is ***VERY*** important for the proper processor function selection, since adding "const" is considered as a cast
+    template<typename Proc, typename T, typename... Tags>
+    void apply_proc(Proc &&proc, T &&l, T &&r, Tags const... tags)
     {
-        if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<Proc>>) \
-            proc(std::forward<T>(l), std::forward<T>(r), std::forward<Args>(args)...); \
-        else \
-            proc(std::forward<T>(l), std::forward<Args>(args)...); \
+        if constexpr (std::is_base_of_v<cora::reflection::processor2, std::remove_reference_t<Proc>>) 
+            proc(std::forward<T>(l), std::forward<T>(r), tags...); 
+        else 
+            proc(std::forward<T>(l), tags...);
     }
-
 
 } // namespace reflection
 } // namespace cora
